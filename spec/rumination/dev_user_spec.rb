@@ -53,4 +53,10 @@ describe Rumination::DevUser do
     expect { user_with_email }.to_not raise_error
     expect(user_with_email.email).to eq "overridden@email.com"
   end
+
+  it "initializes name from email if given" do
+    ENV.delete "USER"
+    expect { user_with_email }.to_not raise_error
+    expect(user_with_email.name).to eq "overridden"
+  end
 end

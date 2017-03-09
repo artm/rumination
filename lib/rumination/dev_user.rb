@@ -9,6 +9,7 @@ module Rumination
     def initialize args={}
       super
       self.name ||= ENV["USER"]
+      self.name ||= self.email[/^.*(?=@)/] if self.email.present?
       raise CannotBeInitialized, "Can't guess dev user name" unless self.name.present?
       self.password ||= ENV["DEV_PASSWORD"]
       raise CannotBeInitialized, "Can't guess dev user password" unless self.password.present?
