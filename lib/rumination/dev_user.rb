@@ -2,8 +2,10 @@ require "active_model"
 
 module Rumination
   class DevUser
-    CannotBeInitialized = Class.new(RuntimeError)
     include ActiveModel::Model
+    include ActiveModel::Serialization
+
+    CannotBeInitialized = Class.new(RuntimeError)
     attr_accessor :name, :host, :password, :email
 
     def initialize args={}
@@ -16,6 +18,15 @@ module Rumination
       self.host ||= ENV["DEV_HOST"]
       raise CannotBeInitialized, "Can't guess dev user email" unless self.email.present? || self.host.present?
       self.email ||= [name, host].join("@")
+    end
+
+    def attributes
+      {
+        "name" => nil,
+        "password" => nil,
+        "host" => nil,
+        "email" => nil,
+      }
     end
   end
 end
