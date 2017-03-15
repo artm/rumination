@@ -3,7 +3,6 @@ require "active_model"
 module Rumination
   class DevUser
     include ActiveModel::Model
-    include ActiveModel::Serialization
 
     CannotBeInitialized = Class.new(RuntimeError)
     attr_accessor :name, :host, :password, :email
@@ -21,12 +20,11 @@ module Rumination
     end
 
     def attributes
-      {
-        "name" => nil,
-        "password" => nil,
-        "host" => nil,
-        "email" => nil,
-      }
+      attribute_names.map{|attribute| [attribute, send(attribute)]}.to_h
+    end
+
+    def attribute_names
+      %w[name password host email]
     end
   end
 end

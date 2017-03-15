@@ -60,9 +60,9 @@ describe Rumination::DevUser do
     expect(user_with_email.name).to eq "overridden"
   end
 
-  describe "#serializable_hash" do
+  describe "#attributes" do
     it "returns a hash of attributes" do
-      expect(default_user.serializable_hash).to match(
+      expect(default_user.attributes).to match(
         "name" => "user",
         "password" => "supersecret",
         "host" => "localhost.here",
