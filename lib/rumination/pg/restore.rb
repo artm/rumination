@@ -4,6 +4,7 @@ module Rumination
       attr_reader :args
 
       def initialize *args
+        require "open3"
         @args = args.dup.freeze
       end
 
