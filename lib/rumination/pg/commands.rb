@@ -1,3 +1,5 @@
+require_relative "restore"
+
 module Rumination
   module Pg
     # include this module into something with #sh, e.g. next to Rake::FileUtils
