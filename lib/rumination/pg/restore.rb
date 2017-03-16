@@ -4,7 +4,7 @@ module Rumination
       attr_reader :args
 
       def initialize *args
-        @args = @args.dup.freeze
+        @args = args.dup.freeze
       end
 
       def self.call *args
