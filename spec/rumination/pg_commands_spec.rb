@@ -23,4 +23,22 @@ RSpec.describe Rumination::Pg::Commands do
       dsl.create_dump "dump/path", "-O", "-c"
     end
   end
+
+  describe "load_dump" do
+    it "has usable defaults" do
+      expect(dsl).to receive(:sh).with("gunzip -c dump/path | psql --quiet")
+      dsl.load_dump "dump/path"
+    end
+
+    it "can be reconfigured" do
+      allow(Rumination.config.pg).to receive(:load_dump_args) { %w[-e -E] }
+      expect(dsl).to receive(:sh).with("gunzip -c dump/path | psql -e -E")
+      dsl.load_dump "dump/path"
+    end
+
+    it "expects optional command line flags" do
+      expect(dsl).to receive(:sh).with("gunzip -c dump/path | psql --quiet -e -E")
+      dsl.load_dump "dump/path", "-e", "-E"
+    end
+  end
 end
