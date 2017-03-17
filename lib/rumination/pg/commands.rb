@@ -15,6 +15,23 @@ module Rumination
       def rsync *args
         sh "rsync #{args.join(" ")}"
       end
+
+      def create_dump path, *args
+        args = [
+          *required_create_dump_args,
+          *configured_create_dump_args,
+          "--file=#{path}",
+          *args]
+        sh "pg_dump #{args.join(" ")}"
+      end
+
+      def required_create_dump_args
+        []
+      end
+
+      def configured_create_dump_args
+        %w[--compress=9]
+      end
     end
   end
 end

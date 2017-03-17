@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Rumination::DevUser do
+RSpec.describe Rumination::DevUser do
   subject(:default_user) { Rumination::DevUser.new }
   let(:user_with_email) { Rumination::DevUser.new(email: "overridden@email.com") }
 
