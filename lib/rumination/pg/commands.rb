@@ -2,6 +2,10 @@ require_relative "restore"
 
 module Rumination
   module Pg
+    configure do |config|
+      config.create_dump_args = %w[--compress=9]
+    end
+
     # include this module into something with #sh, e.g. next to Rake::FileUtils
     module Commands
       def pg_dump *args
@@ -19,18 +23,14 @@ module Rumination
       def create_dump path, *args
         args = [
           *required_create_dump_args,
-          *configured_create_dump_args,
-          "--file=#{path}",
-          *args]
+          *Pg.config.create_dump_args,
+          *args,
+          "--file=#{path}"]
         sh "pg_dump #{args.join(" ")}"
       end
 
       def required_create_dump_args
         []
-      end
-
-      def configured_create_dump_args
-        %w[--compress=9]
       end
     end
   end
