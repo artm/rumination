@@ -1,4 +1,5 @@
 require "active_support/configurable"
+require "rumination/railtie" if defined?(Rails)
 
 module Rumination
   include ActiveSupport::Configurable
