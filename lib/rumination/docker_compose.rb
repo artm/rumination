@@ -5,18 +5,18 @@ module Rumination
   module DockerCompose
     extend Sh
 
-    def self.build
-      sh "docker-compose build"
+    def self.build *args
+      sh "docker-compose build", *args
       self
     end
 
-    def self.down
-      sh "docker-compose down"
+    def self.down *args
+      sh "docker-compose down", *args
       self
     end
 
-    def self.up
-      sh "docker-compose up -d"
+    def self.up *args
+      sh "docker-compose up -d", *args
       self
     end
   end

@@ -15,18 +15,18 @@ module Rumination
         $? == 0
       end
 
-      def exec command
-        sh "docker-compose exec #{name} #{command}"
+      def exec command, *args
+        sh "docker-compose exec", name, command, *args
         self
       end
 
-      def run command
-        sh "docker-compose run --rm #{name} #{command}"
+      def run command, *args
+        sh "docker-compose run --rm", name, command, *args
         self
       end
 
-      def restart
-        sh "docker-compose restart #{name}"
+      def restart *args
+        sh "docker-compose restart", name, *args
         self
       end
     end
