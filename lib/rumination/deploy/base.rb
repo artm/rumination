@@ -64,6 +64,10 @@ module Rumination
         end
       end
 
+      def generate_password
+        Generate.password
+      end
+
       def bootstrapped?
         container(:backend).has_file?(env_file_path)
       end
