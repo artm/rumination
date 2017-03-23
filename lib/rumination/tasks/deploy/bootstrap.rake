@@ -7,5 +7,13 @@ namespace :deploy do
       abort "'#{args.target}' has already been bootstrapped"
     end
   end
-end
 
+  namespace :bootstrap do
+    # these are invoked inside the containers
+    task :inside, [:target] => %w[write_env_file db:setup:maybe_load_dump]
+
+    task :write_env_file, [:target] do |t, args|
+      Rumination::Deploy.new(args.target).write_env_file
+    end
+  end
+end

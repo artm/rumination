@@ -24,11 +24,31 @@ module Rumination
           .run("rake deploy:finish[#{target}]")
       end
 
+      def env
+        load target_config_path
+        env = docker_machine_env
+        env["VIRTUAL_HOST"] = config.virtual_host
+        env["COMPOSE_FILE"] = config.compose_file if config.compose_file
+        env
+      end
+
+      def write_env_file
+        File.open(env_file_path) do |io|
+          password_vars.each do |var|
+            io.puts %Q[export #{var}="#{generate_password}"]
+          end
+        end
+      end
+
+      def generate_password
+        Generate.password
+      end
+
+      private
+
       def on_fresh_containers
-        puts "Bootstrapping '#{target}'"
         raise BootstrappedAlready if bootstrapped?
-        write_env_file
-        initialize_database
+        container(:backend).run("rake deploy:bootstap:inside[#{target}]")
       end
 
       def load_application_config_if_exists
@@ -53,37 +73,13 @@ module Rumination
         config.generate_passwords || Array(config.generate_password)
       end
 
-      def env
-        load target_config_path
-        env = docker_machine_env
-        env["VIRTUAL_HOST"] = config.virtual_host
-        env["COMPOSE_FILE"] = config.compose_file if config.compose_file
-        env
-      end
-
       def docker_machine_env
         dm_env_str = `docker-machine env #{config.docker_machine}`
         Dotenv::Parser.call(dm_env_str)
       end
 
-      def write_env_file
-        password_vars.each do |var|
-          container(:backend)
-            .run(%Q[echo "#{var}=#{generate_password}" >> #{env_file_path}])
-        end
-      end
-
-      def generate_password
-        Generate.password
-      end
-
       def bootstrapped?
         container(:backend).has_file?(env_file_path)
-      end
-
-      def initialize_database
-        container(:backend).run("rake db:setup:maybe_load_dump")
-        raise DatabaseInitError unless $? == 0
       end
 
       def env_file_path
