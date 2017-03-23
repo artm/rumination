@@ -48,12 +48,20 @@ module Rumination
         "./config/deploy/targets/#{target}.rb"
       end
 
+      def password_vars
+        config.generate_passwords || Array(config.generate_password)
+      end
+
       def setup_docker_machine_env
         dm_env_str = `docker-machine env #{Deploy.config.docker_machine}`
         ENV.update Dotenv::Parser.call(dm_env_str)
       end
 
       def write_env_file
+        password_vars.each do |var|
+          container(:backend)
+            .run(%Q[echo "#{var}=#{generate_password}" >> #{env_file_path}])
+        end
       end
 
       def bootstrapped?
