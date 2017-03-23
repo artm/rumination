@@ -40,7 +40,7 @@ module Rumination
       end
 
       def load_target_config
-        ENV.merge env
+        ENV.update env
       rescue LoadError => e
         raise UnknownTarget, e.message
       end
