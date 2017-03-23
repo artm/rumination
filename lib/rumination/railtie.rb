@@ -9,6 +9,7 @@ module Rumination
       end
     end
     initializer "rumination.load_app_env" do
+      require "dotenv"
       Dotenv.load("/opt/app/env") if File.exists?("/opt/app/env")
     end
   end
