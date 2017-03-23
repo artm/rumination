@@ -17,7 +17,7 @@ module Rumination
       def call
         load_application_config_if_exists
         load_target_config
-        DockerCompose.build.down.up
+        DockerCompose.build.down("--remove-orphans").up
         yield if block_given?
         container(:backend)
           .exec("rake deploy:unload[#{target}]")
