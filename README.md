@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/rumination.svg)](https://badge.fury.io/rb/rumination)
 
-/ruːmɪˈneɪʃ(ə)n/
+[/ruːmɪˈneɪʃ(ə)n/](https://forvo.com/word/rumination/#en)
 
 noun
 
