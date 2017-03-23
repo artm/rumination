@@ -4,6 +4,8 @@ require "dotenv/parser"
 module Rumination
   module Deploy
     Base ||= Struct.new(:target) do
+      delegate :config, to: Deploy
+
       def bootstrap
         call do
           on_fresh_containers
@@ -37,9 +39,9 @@ module Rumination
 
       def load_target_config
         load target_config_path
-        ENV["VIRTUAL_HOST"] = Deploy.config.virtual_host
-        ENV["COMPOSE_FILE"] = Deploy.config.compose_file if Deploy.config.compose_file
-        setup_docker_machine_env if Deploy.config.docker_machine
+        ENV["VIRTUAL_HOST"] = config.virtual_host
+        ENV["COMPOSE_FILE"] = config.compose_file if config.compose_file
+        setup_docker_machine_env if config.docker_machine
       rescue LoadError => e
         raise UnknownTarget, e.message
       end
@@ -53,7 +55,7 @@ module Rumination
       end
 
       def setup_docker_machine_env
-        dm_env_str = `docker-machine env #{Deploy.config.docker_machine}`
+        dm_env_str = `docker-machine env #{config.docker_machine}`
         ENV.update Dotenv::Parser.call(dm_env_str)
       end
 
