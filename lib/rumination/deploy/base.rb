@@ -48,7 +48,7 @@ module Rumination
 
       def on_fresh_containers
         raise BootstrappedAlready if bootstrapped?
-        container(:backend).run("rake deploy:bootstap:inside[#{target}]")
+        container(:backend).run("rake deploy:bootstrap:inside[#{target}]")
       end
 
       def load_application_config_if_exists
