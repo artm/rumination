@@ -5,8 +5,10 @@ module Rumination
   module Deploy
     include ActiveSupport::Configurable
     extend Deploy::ClassMethods
-    UnknownTarget = Class.new(RuntimeError)
-    BootstrappedAlready = Class.new(RuntimeError)
-    DatabaseInitError = Class.new(RuntimeError)
+    DeployError = Class.new(RuntimeError)
+    UnknownTarget = Class.new(DeployError)
+    BootstrapError = Class.new(DeployError)
+    BootstrappedAlready = Class.new(BootstrapError)
+    DatabaseInitError = Class.new(BootstrapError)
   end
 end

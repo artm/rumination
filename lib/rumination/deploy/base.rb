@@ -19,9 +19,10 @@ module Rumination
         load_target_config
         DockerCompose.build.down("--remove-orphans").up
         yield if block_given?
-        container(:backend)
-          .exec("rake deploy:unload[#{target}]")
-          .run("rake deploy:finish[#{target}]")
+        container(:backend).exec("rake deploy:unload[#{target}]")
+        raise DeployError unless $? == 0
+        container(:backend).run("rake deploy:finish[#{target}]")
+        raise DeployError unless $? == 0
       end
 
       def env
@@ -49,6 +50,7 @@ module Rumination
       def on_fresh_containers
         raise BootstrappedAlready if bootstrapped?
         container(:backend).run("rake deploy:bootstrap:inside[#{target}]")
+        raise BootstrapError unless $? == 0
       end
 
       def load_application_config_if_exists
