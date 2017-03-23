@@ -40,10 +40,7 @@ module Rumination
       end
 
       def load_target_config
-        load target_config_path
-        ENV["VIRTUAL_HOST"] = config.virtual_host
-        ENV["COMPOSE_FILE"] = config.compose_file if config.compose_file
-        setup_docker_machine_env if config.docker_machine
+        ENV.merge env
       rescue LoadError => e
         raise UnknownTarget, e.message
       end
@@ -56,9 +53,17 @@ module Rumination
         config.generate_passwords || Array(config.generate_password)
       end
 
-      def setup_docker_machine_env
+      def env
+        load target_config_path
+        env = docker_machine_env
+        env["VIRTUAL_HOST"] = config.virtual_host
+        env["COMPOSE_FILE"] = config.compose_file if config.compose_file
+        env
+      end
+
+      def docker_machine_env
         dm_env_str = `docker-machine env #{config.docker_machine}`
-        ENV.update Dotenv::Parser.call(dm_env_str)
+        Dotenv::Parser.call(dm_env_str)
       end
 
       def write_env_file

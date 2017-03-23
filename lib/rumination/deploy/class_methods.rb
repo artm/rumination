@@ -10,6 +10,10 @@ module Rumination
       def app target:
         Base.new(target).call
       end
+
+      def env target:
+        Base.new(target).env
+      end
     end
   end
 end
