@@ -1,5 +1,7 @@
-require_relative "../docker_compose"
 require "dotenv/parser"
+require "active_support/core_ext/module/delegation"
+require_relative "../docker_compose"
+require_relative "../generate"
 
 module Rumination
   module Deploy
