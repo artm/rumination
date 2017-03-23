@@ -13,7 +13,7 @@ namespace :deploy do
     task :inside, [:target] => %w[write_env_file db:setup:maybe_load_dump]
 
     task :write_env_file, [:target] do |t, args|
-      Rumination::Deploy.new(args.target).write_env_file
+      Rumination::Deploy.write_env_file(target: args.target)
     end
   end
 end
