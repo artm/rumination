@@ -8,5 +8,8 @@ module Rumination
         load path
       end
     end
+    initializer "rumination.load_app_env" do
+      Dotenv.load("/opt/app/env") if File.exists?("/opt/app/env")
+    end
   end
 end
