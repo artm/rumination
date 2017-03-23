@@ -6,8 +6,11 @@ RSpec.describe "Rumination::Railtie" do
     end
   end
   context "with rails" do
-    before do
+    around do |example|
       module Rails ; end
+      example.call
+      Object.send(:remove_const, :Rails)
+      Rumination.send(:remove_const, :Railtie)
     end
     it "is defined" do
       load "./lib/rumination.rb"
