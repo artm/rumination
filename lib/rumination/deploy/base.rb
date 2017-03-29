@@ -29,6 +29,10 @@ module Rumination
         load target_config_path
         env = docker_machine_env
         env["VIRTUAL_HOST"] = config.virtual_host
+        if config.letsencrypt_email.present?
+          env["LETSENCRYPT_HOST"] = config.virtual_host
+          env["LETSENCRYPT_EMAIL"] = config.letsencrypt_email
+        end
         env["COMPOSE_FILE"] = config.compose_file if config.compose_file
         env
       end
