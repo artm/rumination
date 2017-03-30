@@ -16,7 +16,10 @@ module Rumination
 
       def bootstrap
         call do
-          on_fresh_containers
+          raise BootstrappedAlready if bootstrapped?
+          copy_dump_if_requested
+          container(:backend).run("rake deploy:bootstrap:inside[#{target}]")
+          raise BootstrapError unless $? == 0
         end
       end
 
@@ -66,10 +69,13 @@ module Rumination
 
       private
 
-      def on_fresh_containers
-        raise BootstrappedAlready if bootstrapped?
-        container(:backend).run("rake deploy:bootstrap:inside[#{target}]")
-        raise BootstrapError unless $? == 0
+      def copy_dump_if_requested
+        return unless config.copy_dumpfile.present?
+        return unless File.exists?(config.copy_dumpfile)
+        container(:backend).cp_to_container(
+          config.copy_dumpfile,
+          Rumination.config.pg.dumpfile_path
+        )
       end
 
       def load_application_config_if_exists

@@ -29,6 +29,20 @@ module Rumination
         sh "docker-compose restart", name, *args
         self
       end
+
+      def cp_to_container local_path, container_path, *args
+        args << local_path
+        args << "#{full_name}:#{container_path}"
+        sh "docker cp", *args
+      end
+
+      def full_name
+        "#{compose_project_name}_#{name}"
+      end
+
+      def compose_project_name
+        ENV["COMPOSE_PROJECT_NAME"]
+      end
     end
   end
 end
