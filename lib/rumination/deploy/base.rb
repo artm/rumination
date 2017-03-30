@@ -21,6 +21,7 @@ module Rumination
       end
 
       def call
+        setup_outside_env
         DockerCompose.build.down("--remove-orphans").up
         yield if block_given?
         container(:backend).exec("rake deploy:unload[#{target}]")
@@ -29,8 +30,17 @@ module Rumination
         raise DeployError unless $? == 0
       end
 
-      def env
+      def load_target_config
         load target_config_path
+      rescue LoadError => e
+        raise UnknownTarget, e.message
+      end
+
+      def setup_outside_env
+        ENV.update env
+      end
+
+      def env
         env = docker_machine_env
         env["VIRTUAL_HOST"] = config.virtual_host
         if config.letsencrypt_email.present?
@@ -68,12 +78,6 @@ module Rumination
 
       def application_config_path
         "./config/deploy/application.rb"
-      end
-
-      def load_target_config
-        ENV.update env
-      rescue LoadError => e
-        raise UnknownTarget, e.message
       end
 
       def target_config_path
