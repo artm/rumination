@@ -85,7 +85,11 @@ module Rumination
       end
 
       def docker_machine_env
-        dm_env_str = `docker-machine env #{config.docker_machine}`
+        dm_env_str = if config.docker_machine
+                       `docker-machine env #{config.docker_machine}`
+                     else
+                       ""
+                     end
         Dotenv::Parser.call(dm_env_str)
       end
 
