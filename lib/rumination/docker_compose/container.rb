@@ -1,3 +1,4 @@
+require "dotenv/parser"
 require_relative "sh"
 
 module Rumination
@@ -41,7 +42,12 @@ module Rumination
       end
 
       def compose_project_name
-        ENV["COMPOSE_PROJECT_NAME"]
+        env = if File.exists?(".env")
+                Dotenv::Parser.call(File.read(".env"))
+              else
+                {}
+              end
+        env["COMPOSE_PROJECT_NAME"] || File.basename(Dir.pwd)
       end
     end
   end
