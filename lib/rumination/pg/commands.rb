@@ -5,6 +5,7 @@ module Rumination
     configure do |config|
       config.create_dump_args = %w[--compress=9]
       config.load_dump_args = %w[--quiet]
+      config.dumpfile_path = "db/postgres_dumps/seeds.sql.gz"
     end
 
     # include this module into something with #sh, e.g. next to Rake::FileUtils

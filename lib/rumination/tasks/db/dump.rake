@@ -1,12 +1,14 @@
 namespace :db do
   include Rumination::Pg::Commands
 
-  task :create_dump => :pg_environment do
-    create_dump dump_path, "-O"
+  task :create_dump, [:dumpfile_path] => :pg_environment do |t, args|
+    args.with_defaults dumpfile_path: Rumination.config.pg.dumpfile_path
+    create_dump args.dumpfile_path, "-O"
   end
 
-  task :load_dump => :pg_environment do
-    load_dump dump_path
+  task :load_dump, [:dumpfile_path] => :pg_environment do |t, args|
+    args.with_defaults dumpfile_path: Rumination.config.pg.dumpfile_path
+    load_dump args.dumpfile_path
   end
 
   task :pg_environment => :environment do
