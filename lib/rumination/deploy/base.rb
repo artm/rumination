@@ -8,6 +8,12 @@ module Rumination
     Base ||= Struct.new(:target) do
       delegate :config, to: Deploy
 
+      def initialize *args
+        super
+        load_application_config_if_exists
+        load_target_config
+      end
+
       def bootstrap
         call do
           on_fresh_containers
@@ -15,8 +21,6 @@ module Rumination
       end
 
       def call
-        load_application_config_if_exists
-        load_target_config
         DockerCompose.build.down("--remove-orphans").up
         yield if block_given?
         container(:backend).exec("rake deploy:unload[#{target}]")
@@ -73,7 +77,7 @@ module Rumination
       end
 
       def target_config_path
-        "./config/deploy/targets/#{target}.rb"
+        (config.target_config_path || "./config/deploy/targets/%s.rb") % target
       end
 
       def password_vars
