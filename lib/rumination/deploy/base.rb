@@ -40,6 +40,7 @@ module Rumination
       def write_env_file
         File.open(env_file_path, "w") do |io|
           password_vars.each do |var|
+            puts "Generating #{var}"
             io.puts %Q[export #{var}="#{generate_password}"]
           end
         end

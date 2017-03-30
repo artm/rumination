@@ -38,5 +38,16 @@ RSpec.describe Rumination::Deploy::Base do
         "VIRTUAL_HOST" => "host.me"
       )
     end
+    context "with generate_password configured" do
+      before do
+        Rumination::Deploy.configure do |config|
+          config.generate_password = "ONE_PASSWORD"
+        end
+      end
+
+      it "password_vars lists the password" do
+        expect(deploy.send(:password_vars)).to match %w(ONE_PASSWORD)
+      end
+    end
   end
 end
