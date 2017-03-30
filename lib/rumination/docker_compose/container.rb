@@ -38,7 +38,7 @@ module Rumination
       end
 
       def full_name
-        "#{compose_project_name}_#{name}"
+        "#{compose_project_name}_#{name}_1"
       end
 
       def compose_project_name
