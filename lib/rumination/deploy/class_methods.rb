@@ -4,19 +4,23 @@ module Rumination
   module Deploy
     module ClassMethods
       def bootstrap target:
-        Base.new(target).bootstrap
+        deploy_class.new(target).bootstrap
       end
 
       def app target:
-        Base.new(target).call
+        deploy_class.new(target).call
       end
 
       def env target:
-        Base.new(target).env
+        deploy_class.new(target).env
       end
 
       def write_env_file target:
-        Base.new(target).write_env_file
+        deploy_class.new(target).write_env_file
+      end
+
+      def deploy_class
+        config.deploy_class || Base
       end
     end
   end
