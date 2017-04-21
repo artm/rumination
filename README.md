@@ -13,6 +13,8 @@ noun
 
 2.  the action of chewing the cud: *"cows slow down their rumination"*
 
+> Sell your cleverness and buy bewilderment - **Rumi**
+
 ## Installation
 
 Add this line to your application's Gemfile:
