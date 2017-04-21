@@ -19,7 +19,7 @@ module Rumination
         call do
           raise BootstrappedAlready if bootstrapped?
           copy_dump_if_requested
-          container(:backend).run("rake deploy:bootstrap:inside[#{target}]")
+          app_container.run("rake deploy:bootstrap:inside[#{target}]")
           raise BootstrapError unless $? == 0
         end
       end
@@ -28,9 +28,9 @@ module Rumination
         setup_outside_env
         DockerCompose.build.down("--remove-orphans").up
         yield if block_given?
-        container(:backend).exec("rake deploy:unload[#{target}]")
+        app_container.exec("rake deploy:unload[#{target}]")
         raise DeployError unless $? == 0
-        container(:backend).run("rake deploy:finish[#{target}]")
+        app_container.run("rake deploy:finish[#{target}]")
         raise DeployError unless $? == 0
       end
 
@@ -73,7 +73,7 @@ module Rumination
       def copy_dump_if_requested
         return unless config.copy_dumpfile.present?
         return unless File.exists?(config.copy_dumpfile)
-        container(:backend).cp_to_container(
+        app_container.cp_to_container(
           config.copy_dumpfile,
           Rumination.config.pg.dumpfile_path
         )
@@ -105,7 +105,7 @@ module Rumination
       end
 
       def bootstrapped?
-        container(:backend).has_file?(env_file_path)
+        app_container.has_file?(env_file_path)
       end
 
       def env_file_path
@@ -114,6 +114,14 @@ module Rumination
 
       def container(name)
         DockerCompose::Container.new(name)
+      end
+
+      def app_container_name
+        config.app_countainer || :app
+      end
+
+      def app_countainer
+        container(app_container_name)
       end
     end
   end
