@@ -27,6 +27,7 @@ module Rumination
       def call
         setup_outside_env
         DockerCompose.build.down("--remove-orphans").up
+        app_container.run("bundle install") if cached_gems?
         yield if block_given?
         app_container.run("rake deploy:unload[#{target}]")
         raise DeployError unless $? == 0
@@ -122,6 +123,10 @@ module Rumination
 
       def app_container
         container(app_container_name)
+      end
+
+      def cached_gems?
+        target.to_sym == :development
       end
     end
   end
