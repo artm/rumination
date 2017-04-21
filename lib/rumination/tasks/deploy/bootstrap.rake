@@ -1,5 +1,6 @@
 namespace :deploy do
   task :bootstrap, [:target] do |t, args|
+    require "rumination/deploy"
     args.with_defaults target: :development
     begin
       Rumination::Deploy.bootstrap(target: args.target)
@@ -13,6 +14,7 @@ namespace :deploy do
     task :inside, [:target] => %w[write_env_file db:setup:maybe_load_dump]
 
     task :write_env_file, [:target] do |t, args|
+      require "rumination/deploy"
       Rumination::Deploy.write_env_file(target: args.target)
     end
   end
