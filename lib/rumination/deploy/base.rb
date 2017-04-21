@@ -28,7 +28,7 @@ module Rumination
         setup_outside_env
         DockerCompose.build.down("--remove-orphans").up
         yield if block_given?
-        app_container.exec("rake deploy:unload[#{target}]")
+        app_container.run("rake deploy:unload[#{target}]")
         raise DeployError unless $? == 0
         app_container.run("rake deploy:finish[#{target}]")
         raise DeployError unless $? == 0
