@@ -120,7 +120,7 @@ module Rumination
         config.app_countainer || :app
       end
 
-      def app_countainer
+      def app_container
         container(app_container_name)
       end
     end
