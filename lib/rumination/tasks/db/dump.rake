@@ -1,4 +1,5 @@
 namespace :db do
+  require "rumination/pg/commands"
   include Rumination::Pg::Commands
 
   task :create_dump, [:dumpfile_path] => :pg_environment do |t, args|
