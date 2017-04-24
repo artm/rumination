@@ -20,7 +20,7 @@ namespace :deploy do
   task :load_target_config, [:target] do |t, args|
     args.with_defaults target: :development
     begin
-      load target_config_path
+      load "./config/deploy/targets/#{args.target}.rb"
     rescue LoadError => e
       raise RuntimeError, e.message
     end
