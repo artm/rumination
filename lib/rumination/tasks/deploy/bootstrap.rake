@@ -21,6 +21,9 @@ namespace :deploy do
     end
 
     task :confirm_undo, [:target] do |t, args|
+      require "highline/import"
+      question = "Do you really want to undo the bootstrap (database will be dropped)?"
+      abort("Bootstrap undo canceled, you didn't mean it") unless agree(question)
     end
   end
 end
