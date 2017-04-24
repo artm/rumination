@@ -9,7 +9,7 @@ module Rumination
         end
       end
 
-      def bootstrap target:
+      def bootstrap_undo target:
         deploy_class.new(target).bootstrap_undo
       end
 
