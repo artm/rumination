@@ -1,7 +1,7 @@
 namespace :deploy do
   namespace :inside do
     # these are invoked inside the containers
-    task :bootstrap, [:target] => %w[write_env_file db:setup:maybe_load_dump]
+    task :bootstrap, [:target] => %w[db:setup:maybe_load_dump]
 
     namespace :bootstrap do
       task :undo, [:target] => %w[db:drop remove_env_file]

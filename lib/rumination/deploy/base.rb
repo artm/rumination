@@ -30,6 +30,7 @@ module Rumination
       def bootstrap
         raise BootstrappedAlready if bootstrapped?
         copy_dump_if_requested
+        app_container.run("rake deploy:inside:write_env_file[#{target}]")
         app_container.run("rake deploy:inside:bootstrap[#{target}]")
         raise BootstrapError unless $? == 0
       end
