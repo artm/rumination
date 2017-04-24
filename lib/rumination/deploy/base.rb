@@ -16,19 +16,17 @@ module Rumination
       end
 
       def bootstrap
-        call do
-          raise BootstrappedAlready if bootstrapped?
-          copy_dump_if_requested
-          app_container.run("rake deploy:inside:bootstrap[#{target}]")
-          raise BootstrapError unless $? == 0
-        end
+        raise BootstrappedAlready if bootstrapped?
+        copy_dump_if_requested
+        app_container.run("rake deploy:inside:bootstrap[#{target}]")
+        raise BootstrapError unless $? == 0
       end
 
       def call
         setup_outside_env
         DockerCompose.build.down("--remove-orphans").up
         app_container.run("bundle install") if cached_gems?
-        yield if block_given?
+        yield self if block_given?
         app_container.run("rake deploy:inside:unload[#{target}]")
         raise DeployError unless $? == 0
         app_container.run("rake deploy:inside:finish[#{target}]")
@@ -58,11 +56,18 @@ module Rumination
 
       def write_env_file
         File.open(env_file_path, "w") do |io|
-          password_vars.each do |var|
-            puts "Generating #{var}"
-            io.puts %Q[export #{var}="#{generate_password}"]
+          persistent_env.merge(generated_passwords).each do |var, val|
+            io.puts %Q[export #{var}="#{val}"]
           end
         end
+      end
+
+      def persistent_env
+        config.persistent_env || {}
+      end
+
+      def generated_passwords
+        password_vars.map{|var| [var, generate_password]}.to_h
       end
 
       def generate_password

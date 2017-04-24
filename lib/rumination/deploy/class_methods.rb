@@ -4,7 +4,9 @@ module Rumination
   module Deploy
     module ClassMethods
       def bootstrap target:
-        deploy_class.new(target).bootstrap
+        deploy_class.new(target).call do |deploy|
+          deploy.bootstrap
+        end
       end
 
       def app target:
