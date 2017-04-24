@@ -10,7 +10,7 @@ namespace :deploy do
   end
 
   namespace :bootstrap do
-    task :undo, [:target] => %w[confirm_undo] do |t, args|
+    task :undo, [:target] => %w[confirm_undo start_undo] do |t, args|
       require "rumination/deploy"
       args.with_defaults target: :development
       begin
@@ -20,10 +20,12 @@ namespace :deploy do
       end
     end
 
-    task :confirm_undo, [:target] do |t, args|
+    task :confirm_undo do |t, args|
       require "highline/import"
       question = "Do you really want to undo the bootstrap (database will be dropped)?"
       abort("Bootstrap undo canceled, you didn't mean it") unless agree(question)
     end
+
+    task :start_undo, [:target]
   end
 end
