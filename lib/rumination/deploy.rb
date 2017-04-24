@@ -9,6 +9,7 @@ module Rumination
     UnknownTarget = Class.new(DeployError)
     BootstrapError = Class.new(DeployError)
     BootstrappedAlready = Class.new(BootstrapError)
+    NotBootstrappedYet = Class.new(BootstrapError)
     DatabaseInitError = Class.new(BootstrapError)
   end
 end

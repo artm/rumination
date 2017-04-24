@@ -15,13 +15,6 @@ module Rumination
         load_target_config
       end
 
-      def bootstrap
-        raise BootstrappedAlready if bootstrapped?
-        copy_dump_if_requested
-        app_container.run("rake deploy:inside:bootstrap[#{target}]")
-        raise BootstrapError unless $? == 0
-      end
-
       def call
         setup_outside_env
         DockerCompose.build.down("--remove-orphans").up
@@ -31,6 +24,19 @@ module Rumination
         raise DeployError unless $? == 0
         app_container.run("rake deploy:inside:finish[#{target}]")
         raise DeployError unless $? == 0
+      end
+
+      def bootstrap
+        raise BootstrappedAlready if bootstrapped?
+        copy_dump_if_requested
+        app_container.run("rake deploy:inside:bootstrap[#{target}]")
+        raise BootstrapError unless $? == 0
+      end
+
+      def bootstrap_undo
+        raise NotBootstrappedYet unless bootstrapped?
+        app_container.run("rake deploy:inside:bootstrap:undo[#{target}]")
+        raise BootstrapError unless $? == 0
       end
 
       def load_target_config
@@ -60,6 +66,10 @@ module Rumination
             io.puts %Q[export #{var}="#{val}"]
           end
         end
+      end
+
+      def rm_env_file
+        File.rm(env_file_path)
       end
 
       def persistent_env

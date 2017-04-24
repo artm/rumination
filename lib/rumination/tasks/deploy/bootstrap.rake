@@ -8,4 +8,19 @@ namespace :deploy do
       abort "'#{args.target}' has already been bootstrapped"
     end
   end
+
+  namespace :bootstrap do
+    task :undo, [:target] => %w[confirm_undo] do |t, args|
+      require "rumination/deploy"
+      args.with_defaults target: :development
+      begin
+        Rumination::Deploy.bootstrap_undo(target: args.target)
+      rescue Rumination::Deploy::NotBootstrappedYet
+        abort "'#{args.target}' has not been bootstrapped yet"
+      end
+    end
+
+    task :confirm_undo, [:target] do |t, args|
+    end
+  end
 end
