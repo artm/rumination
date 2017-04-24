@@ -1,3 +1,4 @@
+require "fileutils"
 require "dotenv/parser"
 require "active_support/core_ext/module/delegation"
 require "active_support/core_ext/object/blank"
@@ -69,7 +70,7 @@ module Rumination
       end
 
       def rm_env_file
-        File.rm(env_file_path)
+        FileUtils.rm(env_file_path)
       end
 
       def persistent_env
