@@ -35,8 +35,8 @@ module Rumination
       end
 
       def bootstrap_undo
-        raise NotBootstrappedYet unless bootstrapped?
-        app_container.run("rake deploy:inside:bootstrap:undo[#{target}]")
+        setup_outside_env
+        DockerCompose.down("--remove-orphans", "-v")
         raise BootstrapError unless $? == 0
       end
 
