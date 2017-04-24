@@ -72,12 +72,11 @@ module Rumination
       private
 
       def copy_dump_if_requested
-        return unless config.copy_dumpfile.present?
-        return unless File.exists?(config.copy_dumpfile)
-        app_container.cp_to_container(
-          config.copy_dumpfile,
-          Rumination.config.pg.dumpfile_path
-        )
+        source = config.copy_dumpfile
+        return unless source.present?
+        return unless File.exists?(source)
+        target = Rumination.config.pg.dumpfile_path
+        app_container.cp_to_container source, target
       end
 
       def load_application_config_if_exists
