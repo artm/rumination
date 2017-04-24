@@ -19,7 +19,7 @@ module Rumination
         call do
           raise BootstrappedAlready if bootstrapped?
           copy_dump_if_requested
-          app_container.run("rake deploy:bootstrap:inside[#{target}]")
+          app_container.run("rake deploy:inside:bootstrap[#{target}]")
           raise BootstrapError unless $? == 0
         end
       end
@@ -29,9 +29,9 @@ module Rumination
         DockerCompose.build.down("--remove-orphans").up
         app_container.run("bundle install") if cached_gems?
         yield if block_given?
-        app_container.run("rake deploy:unload[#{target}]")
+        app_container.run("rake deploy:inside:unload[#{target}]")
         raise DeployError unless $? == 0
-        app_container.run("rake deploy:finish[#{target}]")
+        app_container.run("rake deploy:inside:finish[#{target}]")
         raise DeployError unless $? == 0
       end
 
