@@ -30,6 +30,7 @@ task :choose_version do
     cp version_tmp, version_src
     sh %Q[git add #{version_src}]
     sh %Q[git commit -m "version bump to #{next_version}"]
+    load version_src
   end
 end
 
