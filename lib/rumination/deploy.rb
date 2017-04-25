@@ -1,9 +1,11 @@
 require "active_support/configurable"
+require "active_support/core_ext/module"
 require_relative "deploy/class_methods"
 require "dotenv/parser"
 
 module Rumination
   module Deploy
+    mattr_accessor :target
     include ActiveSupport::Configurable
     extend Deploy::ClassMethods
     DeployError = Class.new(RuntimeError)

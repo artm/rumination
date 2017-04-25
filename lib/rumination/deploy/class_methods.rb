@@ -18,6 +18,13 @@ module Rumination
         env
       end
 
+      def load_target_config target_name
+        load "./config/deploy/targets/#{target_name}.rb"
+        self.target = target_name
+      rescue LoadError => e
+        raise UnknownTarget, e.message
+      end
+
       def bootstrap target:
         deploy_class.new(target).call do |deploy|
           deploy.bootstrap

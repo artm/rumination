@@ -14,18 +14,14 @@ namespace :deploy do
   end
 
   task :setup_docker_env, [:target] => :load_target_config do |t, args|
-    puts "Setting up '#{args.target}' target docker environment"
+    puts "Setting up '#{Rumination::Deploy.target}' target docker environment"
     ENV.update Rumination::Deploy.docker_env
   end
 
   task :load_target_config, [:target] do |t, args|
     args.with_defaults target: :development
     puts "Loading '#{args.target}' target config"
-    begin
-      load "./config/deploy/targets/#{args.target}.rb"
-    rescue LoadError => e
-      raise RuntimeError, e.message
-    end
+    Rumination::Deploy.load_target_config args.target
   end
 
   namespace :bootstrap do
