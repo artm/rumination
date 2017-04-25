@@ -6,6 +6,11 @@ RSpec.describe "deploy:env" do
     expect { task.invoke }.to output(/# Loading 'development'/).to_stdout
   end
 
+  it "outputs variable exports" do
+    expect(Rumination::Deploy).to receive(:docker_env) { { "DOCKER_VARIABLE" => "value" } }
+    expect { task.invoke }.to output(/^export DOCKER_VARIABLE="value"/).to_stdout
+  end
+
   it "raises UnknownTarget when that is the case" do
     expect do
       expect { task.invoke "unknown_target" }.to output(/# Loading 'unknown_target'/).to_stdout
