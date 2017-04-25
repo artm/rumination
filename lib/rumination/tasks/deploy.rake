@@ -2,9 +2,17 @@ task :deploy, [:target] => "deploy:default"
 
 namespace :deploy do
   task :env, [:target] => [:comment_puts, :load_target_config, :restore_puts] do |t, args|
+    puts
     Rumination::Deploy.docker_env.each do |var, val|
       puts %Q[export #{var}="#{val}"]
     end
+    puts <<-__
+
+# to load this into a bash environment run:
+#
+#   eval $(rake deploy:env[#{Rumination::Deploy.target}])
+
+    __
   end
 
   task :default, [:target] => :setup_docker_env do |t, args|
