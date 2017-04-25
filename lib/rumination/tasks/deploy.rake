@@ -3,7 +3,7 @@ task :deploy, [:target] => "deploy:default"
 namespace :deploy do
   task :env, [:target] => [:puts_comments, :load_target_config] do |t, args|
     Rumination::Deploy.docker_env.each do |var, val|
-      puts %Q[export #{var}="#{val}"]
+      old_puts %Q[export #{var}="#{val}"]
     end
   end
 
@@ -25,10 +25,12 @@ namespace :deploy do
   end
 
   task :puts_comments do
-    alias_method :old_puts, :puts
-    def puts *args
-      print "# "
-      old_puts *args
+    module Kernel
+      alias_method :old_puts, :puts
+      def puts *args
+        print "# "
+        old_puts *args
+      end
     end
   end
 
