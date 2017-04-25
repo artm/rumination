@@ -11,6 +11,14 @@ RSpec.describe "deploy:env" do
     expect { task.invoke }.to output(/^export DOCKER_VARIABLE="value"/).to_stdout
   end
 
+  it "configures VIRTUAL HOST" do
+    expect { task.invoke "host_compose" }.to output(/^export VIRTUAL_HOST="host.me"/).to_stdout
+  end
+
+  it "configures COMPOSE_FILE" do
+    expect { task.invoke "host_compose" }.to output(/^export COMPOSE_FILE="compose.me"/).to_stdout
+  end
+
   it "raises UnknownTarget when that is the case" do
     expect do
       expect { task.invoke "unknown_target" }.to output(/# Loading 'unknown_target'/).to_stdout
