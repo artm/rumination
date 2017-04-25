@@ -1,17 +1,11 @@
 task :deploy, [:target] => "deploy:default"
 
-module Kernel
-  alias_method :orig_puts, :puts
-  def hash_puts *args
-    print "# "
-    orig_puts *args
-  end
-
-  def with_hash_puts
-    Kernel.send :alias_method, :puts, :hash_puts
-    yield
-  ensure
-    Kernel.send :alias_method, :puts, :orig_puts
+module WithHashPuts
+  refine Object do
+    def puts *args
+      print "# "
+      Kernel.puts *args
+    end
   end
 end
 
@@ -48,9 +42,8 @@ namespace :deploy do
   end
 
   task :load_target_config_filterd, [:target] do |t, args|
-    with_hash_puts do
-      Rake::Task["deploy:load_target_config"].invoke args.target
-    end
+    using WithHashPuts
+    Rake::Task["deploy:load_target_config"].invoke args.target
   end
 
   namespace :bootstrap do
