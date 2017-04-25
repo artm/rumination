@@ -1,7 +1,7 @@
 task :deploy, [:target] => "deploy:default"
 
 namespace :deploy do
-  task :env, [:target] => :load_target_config do |t, args|
+  task :env, [:target] => [:puts_comments, :load_target_config] do |t, args|
     Rumination::Deploy.docker_env.each do |var, val|
       puts %Q[export #{var}="#{val}"]
     end
@@ -22,6 +22,14 @@ namespace :deploy do
     args.with_defaults target: :development
     puts "Loading '#{args.target}' target config"
     Rumination::Deploy.load_target_config args.target
+  end
+
+  tasks :puts_comments do
+    alias_method :old_puts, :puts
+    def puts *args
+      print "# "
+      old_puts *args
+    end
   end
 
   namespace :bootstrap do
