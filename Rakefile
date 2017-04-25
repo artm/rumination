@@ -30,9 +30,7 @@ task :choose_version do
     cp version_tmp, version_src
     sh %Q[git add #{version_src}]
     sh %Q[git commit -m "version bump to #{next_version}"]
-    Rumination.send(:remove_const, "VERSION")
-    load version_src
-    puts "version is now: #{Rumination::VERSION}"
+    # just overwriting VERSION in the same rake process doesn't work, but this does
     exec "bin/rake release"
   end
 end
