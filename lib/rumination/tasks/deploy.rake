@@ -24,7 +24,7 @@ namespace :deploy do
     Rumination::Deploy.load_target_config args.target
   end
 
-  tasks :puts_comments do
+  task :puts_comments do
     alias_method :old_puts, :puts
     def puts *args
       print "# "
