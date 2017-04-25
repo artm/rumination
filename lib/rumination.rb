@@ -9,6 +9,13 @@ require_relative "rumination/version"
 require_relative "rumination/dev_user"
 require_relative "rumination/pg"
 
-Rumination.configure do |config|
-  config.pg = Rumination::Pg.config
+module Rumination
+  def self.factory_reset
+    config.clear
+    configure do |config|
+      config.pg = Rumination::Pg.config
+    end
+  end
+
+  factory_reset
 end

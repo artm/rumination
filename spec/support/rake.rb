@@ -17,6 +17,7 @@ RSpec.shared_context "rake" do
   around(:example) do |example|
     Rake.application = rake
     Rake.application.rake_require(task_path, ["."], loaded_files_excluding_current_rake_file)
+    Rumination.factory_reset
     Dir.chdir("spec/fixtures/client_app") do
       example.call
     end
