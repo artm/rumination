@@ -6,8 +6,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
 
-task :release do
-  puts "oi!"
+task :choose_version do
   current_version = Rumination::VERSION
   released = `git tag -l v#{current_version}`.present?
   if released
@@ -34,7 +33,9 @@ task :release do
     Rumination.send(:remove_const, "VERSION")
     load version_src
     puts "version is now: #{Rumination::VERSION}"
+    exec "bin/rake release"
   end
 end
 
+task release: :choose_version
 require "bundler/gem_tasks"
