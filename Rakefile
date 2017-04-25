@@ -1,4 +1,3 @@
-require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "highline/import"
 require "active_support/core_ext/object/blank"
@@ -35,3 +34,4 @@ task :choose_version do
 end
 
 task release: :choose_version
+require "bundler/gem_tasks"
