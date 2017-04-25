@@ -31,6 +31,7 @@ task :choose_version do
     sh %Q[git add #{version_src}]
     sh %Q[git commit -m "version bump to #{next_version}"]
     load version_src
+    puts "version is now: #{Rumination::VERSION}"
   end
 end
 
