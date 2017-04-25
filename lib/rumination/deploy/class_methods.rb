@@ -9,8 +9,8 @@ module Rumination
           dm_env_str = `docker-machine env #{config.docker_machine}`
           env = env.merge(Dotenv::Parser.call(dm_env_str))
         end
-        env["COMPOSE_FILE"] = config.compose_file if config.compose_file
-        env["VIRTUAL_HOST"] = config.virtual_host
+        env["COMPOSE_FILE"] &&= config.compose_file
+        env["VIRTUAL_HOST"] &&= config.virtual_host
         if config.letsencrypt_email.present?
           env["LETSENCRYPT_HOST"] = config.virtual_host
           env["LETSENCRYPT_EMAIL"] = config.letsencrypt_email

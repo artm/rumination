@@ -12,6 +12,9 @@ require_relative "rumination/pg"
 module Rumination
   def self.factory_reset
     config.clear
+    if defined? Rumination::Deploy
+      Rumination::Deploy.config.clear
+    end
     configure do |config|
       config.pg = Rumination::Pg.config
     end

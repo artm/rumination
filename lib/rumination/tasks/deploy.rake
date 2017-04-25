@@ -1,7 +1,22 @@
 task :deploy, [:target] => "deploy:default"
 
+module Kernel
+  alias_method :orig_puts, :puts
+  def hash_puts *args
+    print "# "
+    orig_puts *args
+  end
+
+  def with_hash_puts
+    Kernel.send :alias_method, :puts, :hash_puts
+    yield
+  ensure
+    Kernel.send :alias_method, :puts, :orig_puts
+  end
+end
+
 namespace :deploy do
-  task :env, [:target] => [:comment_puts, :load_target_config, :restore_puts] do |t, args|
+  task :env, [:target] => :load_target_config_filterd do |t, args|
     puts
     Rumination::Deploy.docker_env.each do |var, val|
       puts %Q[export #{var}="#{val}"]
@@ -32,19 +47,9 @@ namespace :deploy do
     Rumination::Deploy.load_target_config args.target
   end
 
-  task :comment_puts do
-    module Kernel
-      alias_method :old_puts, :puts
-      def puts *args
-        print "# "
-        old_puts *args
-      end
-    end
-  end
-
-  task :restore_puts do
-    module Kernel
-      alias_method :puts, :old_puts
+  task :load_target_config_filterd, [:target] do |t, args|
+    with_hash_puts do
+      Rake::Task["deploy:load_target_config"].invoke args.target
     end
   end
 
