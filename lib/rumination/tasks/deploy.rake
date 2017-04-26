@@ -7,12 +7,6 @@ namespace :deploy do
     on:deployed
   ]
 
-  task :prepare_containers => %w[
-    build_containers
-    shut_down_services
-    start_services
-  ]
-
   task :bootstrap, [:target] => %w[
     setup_docker_env
     prepare_containers
@@ -42,10 +36,18 @@ namespace :deploy do
   end
 
   namespace :bootstrap do
-    task :env_file
+    task :env_file do
+      env_file_path = "/opt/app/env"
+      temp_file_path = "tmp/#{Rumination::Deploy.target}.env"
+      mkdir_p File.dirname(temp_file_path)
+      Rumination::Deploy.write_env_file(temp_file_path)
+      raise "Implement me: copy env file to the container"
+    end
+
     task :db
 
     task :undo, [:target] => %w[confirm_undo] do |t, args|
+      sh "docker-compose down --remove-orphans -v"
     end
 
     task :confirm_undo do |t, args|
@@ -71,6 +73,12 @@ namespace :deploy do
       Rake::Task["deploy:load_target_config"].invoke args.target
     end
   end
+
+  task :prepare_containers => %w[
+    build_containers
+    shut_down_services
+    start_services
+  ]
 
   task :build_containers do
     sh "docker-compose build"

@@ -1,4 +1,4 @@
-require_relative "base"
+require_relative "../generate"
 
 module Rumination
   module Deploy
@@ -25,34 +25,26 @@ module Rumination
         raise UnknownTarget, e.message
       end
 
-      def bootstrap target:
-        deploy_class.new(target).call do |deploy|
-          deploy.bootstrap
+      def write_env_file path
+        File.open(path, "w") do |io|
+          persistent_env.merge(generated_passwords).each do |var, val|
+            io.puts %Q[export #{var}="#{val}"]
+          end
         end
       end
 
-      def bootstrap_undo target:
-        deploy_class.new(target).bootstrap_undo
+      private
+
+      def persistent_env
+        config.persistent_env || {}
       end
 
-      def app target:
-        deploy_class.new(target).call
+      def generated_passwords
+        password_vars.map{|var| [var, Generate.password]}.to_h
       end
 
-      def env target:
-        deploy_class.new(target).env
-      end
-
-      def write_env_file target:
-        deploy_class.new(target).write_env_file
-      end
-
-      def rm_env_file target:
-        deploy_class.new(target).rm_env_file
-      end
-
-      def deploy_class
-        config.deploy_class || Base
+      def password_vars
+        config.generate_passwords || Array(config.generate_password)
       end
     end
   end
