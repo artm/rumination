@@ -1,4 +1,5 @@
 require "dotenv"
+require "active_support/core_ext/string/strip"
 
 task :deploy, [:target] => "deploy:default"
 
@@ -23,12 +24,10 @@ namespace :deploy do
     Rumination::Deploy.docker_env.each do |var, val|
       puts %Q[export #{var}="#{val}"]
     end
-    puts <<-__
-
-# to load this into a bash environment run:
-#
-#   eval $(rake deploy:env[#{Rumination::Deploy.target}])
-
+    puts <<-__.strip_heredoc
+      # to load this into a bash environment run:
+      #
+      #   eval $(rake deploy:env[#{Rumination::Deploy.target}])
     __
   end
 
