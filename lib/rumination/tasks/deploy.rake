@@ -1,3 +1,5 @@
+require "dotenv"
+
 task :deploy, [:target] => "deploy:default"
 
 namespace :deploy do
@@ -41,7 +43,8 @@ namespace :deploy do
       temp_file_path = "tmp/#{Rumination::Deploy.target}.env"
       mkdir_p File.dirname(temp_file_path)
       Rumination::Deploy.write_env_file(temp_file_path)
-      raise "Implement me: copy env file to the container"
+      container = Rumination::Deploy.app_container_full_name
+      sh "docker cp #{temp_file_path} #{container}:#{env_file_path}"
     end
 
     task :db
@@ -59,6 +62,7 @@ namespace :deploy do
 
   task :setup_docker_env, [:target] => :load_target_config do |t, args|
     puts "Setting up '#{Rumination::Deploy.target}' target docker environment"
+    Dotenv.load
     ENV.update Rumination::Deploy.docker_env
   end
 

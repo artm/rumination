@@ -15,7 +15,10 @@ end
 RSpec.describe "deploy:bootstrap" do
   include_context "rake"
   it "can be invoked" do
-    expect_any_instance_of(FileUtils).to receive(:sh).at_least(3).times
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose down --remove-orphans", any_args)
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose up -d", any_args)
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker cp tmp/development.env clientapp_app_1:/opt/app/env", any_args)
     task.invoke
   end
 end

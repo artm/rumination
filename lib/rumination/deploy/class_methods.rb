@@ -33,6 +33,18 @@ module Rumination
         end
       end
 
+      def app_container_name
+        config.app_container || :app
+      end
+
+      def app_container_full_name
+        "#{compose_project_name}_#{app_container_name}_1"
+      end
+
+      def compose_project_name
+        (ENV["COMPOSE_PROJECT_NAME"] || File.basename(Dir.pwd)).gsub("_","")
+      end
+
       private
 
       def persistent_env
