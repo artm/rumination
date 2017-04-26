@@ -12,6 +12,14 @@ RSpec.describe "deploy" do
   end
 end
 
+RSpec.describe "deploy:bootstrap" do
+  include_context "rake"
+  it "can be invoked" do
+    expect_any_instance_of(FileUtils).to receive(:sh).at_least(3).times
+    task.invoke
+  end
+end
+
 RSpec.describe "deploy:env" do
   include_context "rake"
   let(:preload_task_files) { %w[with_hash_puts] }

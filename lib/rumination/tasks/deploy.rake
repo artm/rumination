@@ -3,9 +3,23 @@ task :deploy, [:target] => "deploy:default"
 namespace :deploy do
   task :default, [:target] => %w[
     setup_docker_env
+    prepare_containers
+    on:deployed
+  ]
+
+  task :prepare_containers => %w[
     build_containers
     shut_down_services
     start_services
+  ]
+
+  task :bootstrap, [:target] => %w[
+    setup_docker_env
+    prepare_containers
+    bootstrap:env_file
+    bootstrap:db
+    on:bootstrapped
+    on:deployed
   ]
 
   task :env, [:target] => :load_target_config_filterd do |t, args|
@@ -22,7 +36,23 @@ namespace :deploy do
     __
   end
 
-  task :bootstrap, [:target] => :setup_docker_env do |t, args|
+  namespace :on do
+    task :deployed
+    task :bootstrapped
+  end
+
+  namespace :bootstrap do
+    task :env_file
+    task :db
+
+    task :undo, [:target] => %w[confirm_undo] do |t, args|
+    end
+
+    task :confirm_undo do |t, args|
+      require "highline/import"
+      question = "Do you really want to undo the bootstrap (database will be dropped)?"
+      abort("Bootstrap undo canceled, you didn't mean it") unless agree(question)
+    end
   end
 
   task :setup_docker_env, [:target] => :load_target_config do |t, args|
@@ -52,17 +82,5 @@ namespace :deploy do
 
   task :start_services do
     sh "docker-compose up -d"
-  end
-
-
-  namespace :bootstrap do
-    task :undo, [:target] => %w[confirm_undo] do |t, args|
-    end
-
-    task :confirm_undo do |t, args|
-      require "highline/import"
-      question = "Do you really want to undo the bootstrap (database will be dropped)?"
-      abort("Bootstrap undo canceled, you didn't mean it") unless agree(question)
-    end
   end
 end
