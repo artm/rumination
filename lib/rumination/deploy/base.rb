@@ -19,14 +19,6 @@ module Rumination
         app_container.cp_to_container source, target
       end
 
-      def load_application_config_if_exists
-        load application_config_path if File.exists?(application_config_path)
-      end
-
-      def application_config_path
-        "./config/deploy/application.rb"
-      end
-
       def target_config_path
         (config.target_config_path || "./config/deploy/targets/%s.rb") % target
       end
@@ -43,10 +35,6 @@ module Rumination
 
       def bootstrapped?
         app_container.has_file?(env_file_path)
-      end
-
-      def env_file_path
-        "/opt/app/env"
       end
 
       def container(name)
