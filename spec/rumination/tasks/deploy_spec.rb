@@ -2,6 +2,8 @@ require "support/rake"
 
 RSpec.describe "deploy:env" do
   include_context "rake"
+  let(:preload_task_files) { %w[with_hash_puts] }
+
   it "outputs target name" do
     expect { task.invoke }.to output(/# Loading 'development'/).to_stdout
   end
