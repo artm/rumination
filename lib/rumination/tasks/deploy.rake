@@ -1,6 +1,13 @@
 task :deploy, [:target] => "deploy:default"
 
 namespace :deploy do
+  task :default, [:target] => %w[
+    setup_docker_env
+    build_containers
+    shut_down_services
+    start_services
+  ]
+
   task :env, [:target] => :load_target_config_filterd do |t, args|
     puts
     Rumination::Deploy.docker_env.each do |var, val|
@@ -13,9 +20,6 @@ namespace :deploy do
 #   eval $(rake deploy:env[#{Rumination::Deploy.target}])
 
     __
-  end
-
-  task :default, [:target] => :setup_docker_env do |t, args|
   end
 
   task :bootstrap, [:target] => :setup_docker_env do |t, args|
@@ -37,6 +41,19 @@ namespace :deploy do
       Rake::Task["deploy:load_target_config"].invoke args.target
     end
   end
+
+  task :build_containers do
+    sh "docker-compose build"
+  end
+
+  task :shut_down_services do
+    sh "docker-compose down --remove-orphans"
+  end
+
+  task :star_services do
+    sh "docker-compose up -d"
+  end
+
 
   namespace :bootstrap do
     task :undo, [:target] => %w[confirm_undo] do |t, args|
