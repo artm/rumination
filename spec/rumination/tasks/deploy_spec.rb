@@ -1,4 +1,16 @@
+require "spec_helper"
+require "rumination/deploy"
 require "support/rake"
+
+RSpec.describe "deploy" do
+  include_context "rake"
+  it "rebuilds containers; stops old services; starts new services" do
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose down --remove-orphans", any_args)
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose up -d", any_args)
+    expect { task.invoke }.to output.to_stdout
+  end
+end
 
 RSpec.describe "deploy:env" do
   include_context "rake"

@@ -50,7 +50,7 @@ namespace :deploy do
     sh "docker-compose down --remove-orphans"
   end
 
-  task :star_services do
+  task :start_services do
     sh "docker-compose up -d"
   end
 
