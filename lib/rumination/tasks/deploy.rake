@@ -1,3 +1,4 @@
+require "rumination/deploy"
 require "dotenv"
 require "active_support/core_ext/string/strip"
 

@@ -1,7 +1,6 @@
 require "active_support/configurable"
 require "active_support/core_ext/module"
 require_relative "deploy/class_methods"
-require "dotenv/parser"
 
 module Rumination
   module Deploy

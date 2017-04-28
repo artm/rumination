@@ -1,4 +1,5 @@
 require "ostruct"
+require "dotenv/parser"
 require_relative "../generate"
 
 module Rumination
