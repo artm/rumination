@@ -2,9 +2,19 @@ require "spec_helper"
 require "rumination/deploy"
 require "support/rake"
 
+def stub_target &block
+  expect(Rumination::Deploy).to receive(:load_target_config) do |target_name|
+    Rumination::Deploy.configure do |config|
+      block.call config
+    end if block_given?
+    Rumination::Deploy.target = target_name
+  end
+end
+
 RSpec.describe "deploy" do
   include_context "rake"
   it "rebuilds containers; stops old services; starts new services" do
+    stub_target
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose down --remove-orphans", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose up -d", any_args)
@@ -15,33 +25,35 @@ end
 RSpec.describe "deploy:bootstrap" do
   include_context "rake"
   it "can be invoked" do
+    stub_target
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose down --remove-orphans", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose up -d", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker cp tmp/development.env clientapp_app_1:/opt/app/env", any_args)
-    task.invoke
+    expect { task.invoke }.to output.to_stdout.and output.to_stderr
   end
 end
 
 RSpec.describe "deploy:env" do
   include_context "rake"
   let(:preload_task_files) { %w[with_hash_puts] }
-
   it "outputs target name" do
-    expect { task.invoke }.to output(/# Loading 'development'/).to_stdout
-  end
-
-  it "outputs variable exports" do
-    expect(Rumination::Deploy).to receive(:docker_env) { { "DOCKER_VARIABLE" => "value" } }
-    expect { task.invoke }.to output(/^export DOCKER_VARIABLE="value"/).to_stdout
+    stub_target
+    expect { task.invoke "production" }.to output(/# Loading 'production'/).to_stdout
   end
 
   it "configures VIRTUAL HOST" do
-    expect { task.invoke "host_compose" }.to output(/^export VIRTUAL_HOST="host.me"/).to_stdout
+    stub_target do |config|
+      config.virtual_host = "host.me"
+    end
+    expect { task.invoke }.to output(/^export VIRTUAL_HOST="host.me"/).to_stdout
   end
 
   it "configures COMPOSE_FILE" do
-    expect { task.invoke "host_compose" }.to output(/^export COMPOSE_FILE="compose.me"/).to_stdout
+    stub_target do |config|
+      config.compose_file = "compose.me"
+    end
+    expect { task.invoke }.to output(/^export COMPOSE_FILE="compose.me"/).to_stdout
   end
 
   it "raises UnknownTarget when that is the case" do
