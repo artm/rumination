@@ -63,6 +63,10 @@ module Rumination
         (ENV["COMPOSE_PROJECT_NAME"] || File.basename(Dir.pwd)).gsub("_","")
       end
 
+      def bootstrapped_flag_path
+        "/opt/app/bootstrapped.ok"
+      end
+
       private
 
       def persistent_env

@@ -12,11 +12,13 @@ namespace :deploy do
 
   task :bootstrap, [:target] => %w[
     start
+    bootstrap:check_flag
     bootstrap:env_file
     bootstrap:copy_files
     bootstrap:db
     on:bootstrapped
     finish
+    bootstrap:flag_success
   ]
 
   task :env, [:target] => :load_target_config_filterd do |t, args|
@@ -54,6 +56,20 @@ namespace :deploy do
     end
 
     task :db
+
+    task :flag_success do
+      container = Rumination::Deploy.app_container_name
+      flag_path = Rumination::Deploy.bootstrapped_flag_path
+      sh "docker-compose run --rm #{container} touch #{flag_path}"
+    end
+
+    task :check_flag do
+      container = Rumination::Deploy.app_container_name
+      flag_path = Rumination::Deploy.bootstrapped_flag_path
+      sh "docker-compose run --rm #{container} test -f #{flag_path}" do |ok, err|
+        raise Rumination::Deploy::BootstrappedAlready, "The target '#{Rumination::Deploy.target}' was bootstrap already"
+      end
+    end
 
     task :undo, [:target] => %w[confirm_undo] do |t, args|
       sh "docker-compose down --remove-orphans -v"
