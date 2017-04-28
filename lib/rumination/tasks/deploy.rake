@@ -5,19 +5,17 @@ task :deploy, [:target] => "deploy:default"
 
 namespace :deploy do
   task :default, [:target] => %w[
-    setup_docker_env
-    prepare_containers
-    on:deployed
+    start
+    finish
   ]
 
   task :bootstrap, [:target] => %w[
-    setup_docker_env
-    prepare_containers
+    start
     bootstrap:env_file
     bootstrap:copy_files
     bootstrap:db
     on:bootstrapped
-    on:deployed
+    finish
   ]
 
   task :env, [:target] => :load_target_config_filterd do |t, args|
@@ -49,7 +47,7 @@ namespace :deploy do
 
     task :copy_files do
       container = Rumination::Deploy.app_container_full_name
-      Rumination::Deploy.bootstrap_copy_files.each do |source, target|
+      Rumination::Deploy.files_to_copy_on_bootstrap.each do |source, target|
         sh "docker cp #{source} #{container}:#{target}"
       end
     end
@@ -85,7 +83,17 @@ namespace :deploy do
     end
   end
 
-  task :prepare_containers => %w[
+  task :start, [:target] => %w[
+    setup_docker_env
+    switch_containers
+  ]
+
+  task :finish => %w[
+    copy_files
+    on:deployed
+  ]
+
+  task :switch_containers => %w[
     build_containers
     shut_down_services
     start_services
@@ -101,5 +109,12 @@ namespace :deploy do
 
   task :start_services do
     sh "docker-compose up -d"
+  end
+
+  task :copy_files do
+    container = Rumination::Deploy.app_container_full_name
+    Rumination::Deploy.files_to_copy_on_deploy.each do |source, target|
+      sh "docker cp #{source} #{container}:#{target}"
+    end
   end
 end

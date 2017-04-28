@@ -41,8 +41,12 @@ module Rumination
         end
       end
 
-      def bootstrap_copy_files
+      def files_to_copy_on_bootstrap
         (config.bootstrap && config.bootstrap.copy_files) || []
+      end
+
+      def files_to_copy_on_deploy
+        config.copy_files || []
       end
 
       def app_container_name
