@@ -42,7 +42,9 @@ RSpec.describe "deploy:bootstrap" do
 
   it "copies files to container on request" do
     stub_target do |config|
-      config.bootstrap = OpenStruct.new( copy_files: { "./foo" => "/opt/app/bar" })
+      config.bootstrap.copy_files = {
+        "./foo" => "/opt/app/bar"
+      }
     end
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker cp ./foo clientapp_app_1:/opt/app/bar", any_args)
     allow_any_instance_of(FileUtils).to receive(:sh)

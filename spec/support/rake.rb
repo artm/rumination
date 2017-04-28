@@ -24,7 +24,7 @@ RSpec.shared_context "rake" do
       rake_require file
     end
     rake_require task_path
-    Rumination.factory_reset
+    Rumination.factory_reset!
     Dir.chdir("spec/fixtures/client_app") do
       example.call
     end

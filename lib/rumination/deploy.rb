@@ -13,5 +13,6 @@ module Rumination
     BootstrapError = Class.new(DeployError)
     BootstrappedAlready = Class.new(BootstrapError)
     DatabaseInitError = Class.new(BootstrapError)
+    factory_reset!
   end
 end

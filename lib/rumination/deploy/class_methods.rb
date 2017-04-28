@@ -1,8 +1,16 @@
+require "ostruct"
 require_relative "../generate"
 
 module Rumination
   module Deploy
     module ClassMethods
+      def factory_reset!
+        config.clear
+        configure do |config|
+          config.bootstrap = OpenStruct.new
+        end
+      end
+
       def docker_env
         env = {}
         if config.docker_machine

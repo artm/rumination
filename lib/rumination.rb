@@ -10,15 +10,15 @@ require_relative "rumination/dev_user"
 require_relative "rumination/pg"
 
 module Rumination
-  def self.factory_reset
+  def self.factory_reset!
     config.clear
     if defined? Rumination::Deploy
-      Rumination::Deploy.config.clear
+      Rumination::Deploy.factory_reset!
     end
     configure do |config|
       config.pg = Rumination::Pg.config
     end
   end
 
-  factory_reset
+  factory_reset!
 end
