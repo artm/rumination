@@ -67,7 +67,10 @@ namespace :deploy do
       container = Rumination::Deploy.app_container_name
       flag_path = Rumination::Deploy.bootstrapped_flag_path
       sh "docker-compose run --rm #{container} test -f #{flag_path}" do |ok, err|
-        raise Rumination::Deploy::BootstrappedAlready, "The target '#{Rumination::Deploy.target}' was bootstrap already"
+        if ok
+          message = "The target '#{Rumination::Deploy.target}' was bootstrap already"
+          raise Rumination::Deploy::BootstrappedAlready, message
+        end
       end
     end
 
