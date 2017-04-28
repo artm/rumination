@@ -33,6 +33,10 @@ module Rumination
         end
       end
 
+      def bootstrap_copy_files
+        (config.bootstrap && config.bootstrap.copy_files) || []
+      end
+
       def app_container_name
         config.app_container || :app
       end

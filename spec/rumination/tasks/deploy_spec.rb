@@ -24,13 +24,29 @@ end
 
 RSpec.describe "deploy:bootstrap" do
   include_context "rake"
-  it "can be invoked" do
+  it "rebuilds containers; stops old services; starts new services" do
     stub_target
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose down --remove-orphans", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose up -d", any_args)
+    allow_any_instance_of(FileUtils).to receive(:sh)
+    expect { task.invoke }.to output.to_stdout.and output.to_stderr_from_any_process
+  end
+
+  it "generates and uploads an app env file" do
+    stub_target
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker cp tmp/development.env clientapp_app_1:/opt/app/env", any_args)
-    expect { task.invoke }.to output.to_stdout.and output.to_stderr
+    allow_any_instance_of(FileUtils).to receive(:sh)
+    expect { task.invoke }.to output.to_stdout.and output.to_stderr_from_any_process
+  end
+
+  it "copies files to container on request" do
+    stub_target do |config|
+      config.bootstrap = OpenStruct.new( copy_files: { "./foo" => "/opt/app/bar" })
+    end
+    expect_any_instance_of(FileUtils).to receive(:sh).with("docker cp ./foo clientapp_app_1:/opt/app/bar", any_args)
+    allow_any_instance_of(FileUtils).to receive(:sh)
+    expect { task.invoke }.to output.to_stdout.and output.to_stderr_from_any_process
   end
 end
 

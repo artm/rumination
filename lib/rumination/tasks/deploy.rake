@@ -14,6 +14,7 @@ namespace :deploy do
     setup_docker_env
     prepare_containers
     bootstrap:env_file
+    bootstrap:copy_files
     bootstrap:db
     on:bootstrapped
     on:deployed
@@ -44,6 +45,13 @@ namespace :deploy do
       Rumination::Deploy.write_env_file(temp_file_path)
       container = Rumination::Deploy.app_container_full_name
       sh "docker cp #{temp_file_path} #{container}:#{env_file_path}"
+    end
+
+    task :copy_files do
+      container = Rumination::Deploy.app_container_full_name
+      Rumination::Deploy.bootstrap_copy_files.each do |source, target|
+        sh "docker cp #{source} #{container}:#{target}"
+      end
     end
 
     task :db
