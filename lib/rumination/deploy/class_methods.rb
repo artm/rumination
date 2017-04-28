@@ -9,6 +9,7 @@ module Rumination
         configure do |config|
           config.bootstrap = OpenStruct.new
         end
+        self.target = nil
       end
 
       def docker_env
