@@ -74,7 +74,10 @@ namespace :deploy do
       end
     end
 
-    task :undo, [:target] => %w[confirm_undo] do |t, args|
+    task :undo, [:target] => %w[
+      confirm_undo
+      setup_docker_env
+    ] do |t, args|
       sh "docker-compose down --remove-orphans -v"
     end
 
