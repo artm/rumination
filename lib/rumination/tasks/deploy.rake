@@ -29,7 +29,9 @@ namespace :deploy do
     puts <<-__.strip_heredoc
       # to load this into a bash environment run:
       #
-      #   eval $(rake deploy:env[#{Rumination::Deploy.target}])
+      #   eval "$(rake deploy:env[#{Rumination::Deploy.target}])"
+      #
+      # Quotes aren't optional
     __
   end
 
