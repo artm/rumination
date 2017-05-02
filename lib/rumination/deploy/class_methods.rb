@@ -25,6 +25,7 @@ module Rumination
           env["LETSENCRYPT_HOST"] = config.virtual_host
           env["LETSENCRYPT_EMAIL"] = config.letsencrypt_email
         end
+        env = env.merge(config.docker_env || {})
         env
       end
 
