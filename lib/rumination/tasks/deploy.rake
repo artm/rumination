@@ -1,6 +1,4 @@
 require "rumination/deploy"
-require "dotenv"
-require "active_support/core_ext/string/strip"
 
 task :deploy => "deploy:default"
 
@@ -20,20 +18,6 @@ namespace :deploy do
     finish
     bootstrap:flag_success
   ]
-
-  task :env => :load_target_config_filterd do
-    puts
-    Rumination::Deploy.docker_env.each do |var, val|
-      puts %Q[export #{var}="#{val}"]
-    end
-    puts <<-__.strip_heredoc
-      # to load this into a bash environment run:
-      #
-      #   eval "$(rake deploy:env[#{Rumination::Deploy.target}])"
-      #
-      # Quotes aren't optional
-    __
-  end
 
   namespace :on do
     task :deployed
@@ -84,24 +68,6 @@ namespace :deploy do
       require "highline/import"
       question = "Do you really want to undo the bootstrap (database will be dropped)?"
       abort("Bootstrap undo canceled, you didn't mean it") unless agree(question)
-    end
-  end
-
-  task :setup_docker_env => :load_target_config do
-    puts "Setting up '#{Rumination::Deploy.target}' target docker environment"
-    Dotenv.load
-    ENV.update Rumination::Deploy.docker_env
-  end
-
-  task :load_target_config do
-    target = ENV["TARGET"] || "development"
-    puts "Loading '#{target}' target config"
-    Rumination::Deploy.load_target_config target
-  end
-
-  task :load_target_config_filterd do
-    with_hash_puts do
-      Rake::Task["deploy:load_target_config"].invoke
     end
   end
 
