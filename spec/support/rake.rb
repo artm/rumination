@@ -9,9 +9,19 @@ RSpec.shared_context "rake" do
   let(:rake_load_path) { Pathname.new(File.expand_path("../../../lib/rumination/tasks", __FILE__)) }
   let(:rake) { Rake::Application.new }
   let(:task_name) { self.class.top_level_description }
-  let(:task_path) { task_name.split(":").first }
+  let(:task_path) { find_task_file(task_name) }
   let(:preload_task_files) { [] }
   subject(:task) { rake[task_name] }
+
+  def find_task_file task_name
+    components = task_name.split(":")
+    begin
+      base = components.join("/")
+      return base if File.exists?("lib/rumination/tasks/#{base}.rake")
+      components.pop
+    end while components.present?
+    raise "Source file for rake task #{task_name} not found"
+  end
 
   def rake_require task_path
     already_loaded = $".reject {|file| file == "#{task_path}.rake" }
