@@ -2,15 +2,15 @@ require "rumination/deploy"
 require "dotenv"
 require "active_support/core_ext/string/strip"
 
-task :deploy, [:target] => "deploy:default"
+task :deploy => "deploy:default"
 
 namespace :deploy do
-  task :default, [:target] => %w[
+  task :default => %w[
     start
     finish
   ]
 
-  task :bootstrap, [:target] => %w[
+  task :bootstrap => %w[
     start
     bootstrap:check_flag
     bootstrap:env_file
@@ -21,7 +21,7 @@ namespace :deploy do
     bootstrap:flag_success
   ]
 
-  task :env, [:target] => :load_target_config_filterd do |t, args|
+  task :env => :load_target_config_filterd do
     puts
     Rumination::Deploy.docker_env.each do |var, val|
       puts %Q[export #{var}="#{val}"]
@@ -76,39 +76,36 @@ namespace :deploy do
       end
     end
 
-    task :undo, [:target] => %w[
-      confirm_undo
-      setup_docker_env
-    ] do |t, args|
+    task :undo => %w[confirm_undo setup_docker_env] do
       sh "docker-compose down --remove-orphans -v"
     end
 
-    task :confirm_undo do |t, args|
+    task :confirm_undo do
       require "highline/import"
       question = "Do you really want to undo the bootstrap (database will be dropped)?"
       abort("Bootstrap undo canceled, you didn't mean it") unless agree(question)
     end
   end
 
-  task :setup_docker_env, [:target] => :load_target_config do |t, args|
+  task :setup_docker_env => :load_target_config do
     puts "Setting up '#{Rumination::Deploy.target}' target docker environment"
     Dotenv.load
     ENV.update Rumination::Deploy.docker_env
   end
 
-  task :load_target_config, [:target] do |t, args|
-    args.with_defaults target: :development
-    puts "Loading '#{args.target}' target config"
-    Rumination::Deploy.load_target_config args.target
+  task :load_target_config do
+    target = ENV["TARGET"] || "development"
+    puts "Loading '#{target}' target config"
+    Rumination::Deploy.load_target_config target
   end
 
-  task :load_target_config_filterd, [:target] do |t, args|
+  task :load_target_config_filterd do
     with_hash_puts do
-      Rake::Task["deploy:load_target_config"].invoke args.target
+      Rake::Task["deploy:load_target_config"].invoke
     end
   end
 
-  task :start, [:target] => %w[
+  task :start => %w[
     setup_docker_env
     switch_containers
   ]
