@@ -13,6 +13,7 @@ end
 
 RSpec.describe "deploy" do
   include_context "rake"
+  let(:preload_task_files) { %w[deploy/env] }
   it "rebuilds containers; stops old services; starts new services" do
     stub_target
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
@@ -35,6 +36,7 @@ end
 
 RSpec.describe "deploy:bootstrap" do
   include_context "rake"
+  let(:preload_task_files) { %w[deploy/env] }
   it "rebuilds containers; stops old services; starts new services" do
     stub_target
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
@@ -68,7 +70,14 @@ RSpec.describe "deploy:env" do
   let(:preload_task_files) { %w[with_hash_puts] }
   it "outputs target name" do
     stub_target
-    expect { task.invoke "production" }.to output(/# Loading 'production'/).to_stdout
+    expect {
+      begin
+        ENV["TARGET"]="production"
+        task.invoke "production"
+      ensure
+        ENV.delete "TARGET"
+      end
+    }.to output(/# Loading 'production'/).to_stdout
   end
 
   it "configures VIRTUAL HOST" do
@@ -87,7 +96,12 @@ RSpec.describe "deploy:env" do
 
   it "raises UnknownTarget when that is the case" do
     expect do
-      expect { task.invoke "unknown_target" }.to output(/# Loading 'unknown_target'/).to_stdout
+      begin
+        ENV["TARGET"]="bad_target"
+        task.invoke
+      ensure
+        ENV.delete "TARGET"
+      end
     end.to raise_error Rumination::Deploy::UnknownTarget
   end
 end
