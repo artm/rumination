@@ -1,3 +1,3 @@
 module Rumination
-  VERSION = "0.13.7"
+  VERSION = "0.14"
 end
