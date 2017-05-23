@@ -1,6 +1,7 @@
-require "rumination/deploy"
 require "dotenv"
 require "active_support/core_ext/string/strip"
+
+require "rumination/deploy"
 
 namespace :deploy do
   task :env => :load_target_config_filterd do
@@ -24,6 +25,7 @@ namespace :deploy do
   end
 
   task :load_target_config_filterd do
+    require "rumination/utils/with_hash_puts"
     with_hash_puts do
       Rake::Task["deploy:load_target_config"].invoke
     end
