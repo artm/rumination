@@ -41,6 +41,10 @@ module Rumination
         self.target.to_s == "development"
       end
 
+      def migrate_on_deploy?
+        config.migrate_on_deploy
+      end
+
       def write_env_file path
         File.open(path, "w") do |io|
           persistent_env.merge(generated_passwords).each do |var, val|

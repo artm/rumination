@@ -98,6 +98,9 @@ module DeployTasks
       if Rumination::Deploy.development_target?
         sh "docker-compose run --rm #{app_container_name} bundle install"
       end
+      if Rumination::Deploy.migrate_on_deploy?
+        sh "docker-compose run --rm #{app_container_name} rake db:migrate"
+      end
       sh "docker-compose up -d"
     end
 
