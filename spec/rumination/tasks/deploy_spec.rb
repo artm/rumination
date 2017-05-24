@@ -16,10 +16,21 @@ RSpec.describe "deploy" do
   let(:preload_task_files) { %w[deploy/env] }
   it "rebuilds containers; stops old services; starts new services" do
     stub_target
+    allow(Rumination::Deploy).to receive(:development_target?) { false }
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose build", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose down --remove-orphans", any_args)
     expect_any_instance_of(FileUtils).to receive(:sh).with("docker-compose up -d", any_args)
     expect { task.invoke }.to output.to_stdout
+  end
+
+  context "with development target" do
+    it "reruns bundle install" do
+      stub_target
+      allow(Rumination::Deploy).to receive(:development_target?) { true }
+      expect_any_instance_of(FileUtils).to receive(:sh).with(/bundle install/, any_args)
+      allow_any_instance_of(FileUtils).to receive(:sh)
+      expect { task.invoke }.to output.to_stdout
+    end
   end
 
   it "copies files to container on request" do
