@@ -33,12 +33,10 @@ module DeployTasks
         temp_file_path = "tmp/#{Rumination::Deploy.target}.env"
         mkdir_p File.dirname(temp_file_path)
         Rumination::Deploy.write_env_file(temp_file_path)
-        container = Rumination::Deploy.app_container_full_name
         sh "docker cp #{temp_file_path} #{container}:#{env_file_path}"
       end
 
       task :copy_files do
-        container = Rumination::Deploy.app_container_full_name
         Rumination::Deploy.files_to_copy_on_bootstrap.each do |source, target|
           sh "docker cp #{source} #{container}:#{target}"
         end
@@ -47,13 +45,11 @@ module DeployTasks
       task :db
 
       task :flag_success do
-        container = Rumination::Deploy.app_container_name
         flag_path = Rumination::Deploy.bootstrapped_flag_path
         sh "docker-compose run --rm #{container} touch #{flag_path}"
       end
 
       task :check_flag do
-        container = Rumination::Deploy.app_container_name
         flag_path = Rumination::Deploy.bootstrapped_flag_path
         sh "docker-compose run --rm #{container} test -f #{flag_path}" do |ok, err|
           if ok
@@ -106,7 +102,6 @@ module DeployTasks
     end
 
     task :copy_files do
-      container = Rumination::Deploy.app_container_full_name
       Rumination::Deploy.files_to_copy_on_deploy.each do |source, target|
         sh "docker cp #{source} #{container}:#{target}"
       end
