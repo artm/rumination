@@ -30,6 +30,7 @@ module Rumination
       end
 
       def load_target_config target_name
+        load shared_config_path if File.exists?(shared_config_path)
         load "./config/deploy/targets/#{target_name}.rb"
         self.target = target_name
       rescue LoadError => e
@@ -84,6 +85,10 @@ module Rumination
 
       def password_vars
         config.generate_passwords || Array(config.generate_password)
+      end
+
+      def shared_config_path
+        "./config/deploy/shared.rb"
       end
     end
   end
