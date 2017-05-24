@@ -113,8 +113,9 @@ module DeployTasks
     end
   end
 
-  def container
-    Rumination::Deploy.app_container_name
+  class << self
+    def container
+      Rumination::Deploy.app_container_name
+    end
   end
-
 end
