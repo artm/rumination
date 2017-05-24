@@ -96,6 +96,9 @@ namespace :deploy do
   end
 
   task :start_services do
+    if Rumination::Deploy.development_target?
+      sh "docker-compose run --rm #{container} bundle install"
+    end
     sh "docker-compose up -d"
   end
 

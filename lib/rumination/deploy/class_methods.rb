@@ -36,6 +36,10 @@ module Rumination
         raise UnknownTarget, e.message
       end
 
+      def development_target?
+        self.target.to_s == "development"
+      end
+
       def write_env_file path
         File.open(path, "w") do |io|
           persistent_env.merge(generated_passwords).each do |var, val|
