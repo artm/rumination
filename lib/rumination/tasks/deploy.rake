@@ -74,6 +74,7 @@ module DeployTasks
       setup_docker_env
       build_containers
       shut_down_services
+      pre_start
       start_services
     ]
 
@@ -90,13 +91,16 @@ module DeployTasks
       sh "docker-compose down --remove-orphans"
     end
 
-    task :start_services do
+    task :pre_start do
       if Rumination::Deploy.development_target?
         sh "docker-compose run --rm #{app_container_name} bundle install"
       end
       if Rumination::Deploy.migrate_on_deploy?
         sh "docker-compose run --rm #{app_container_name} rake db:migrate"
       end
+    end
+
+    task :start_services do
       sh "docker-compose up -d"
     end
 
