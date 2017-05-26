@@ -72,18 +72,14 @@ module DeployTasks
 
     task :start => %w[
       setup_docker_env
-      switch_containers
+      build_containers
+      shut_down_services
+      start_services
     ]
 
     task :finish => %w[
       copy_files
       on:deployed
-    ]
-
-    task :switch_containers => %w[
-      build_containers
-      shut_down_services
-      start_services
     ]
 
     task :build_containers do
