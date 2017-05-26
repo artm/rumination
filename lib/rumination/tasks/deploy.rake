@@ -7,18 +7,29 @@ module DeployTasks
 
   namespace :deploy do
     task :default => %w[
-      start
-      finish
+      setup_docker_env
+      build_containers
+      shut_down_services
+      refresh_gems_in_development
+      migrate_if_requested
+      start_services
+      copy_files
+      on:deployed
     ]
 
     task :bootstrap => %w[
-      start
+      setup_docker_env
+      build_containers
+      shut_down_services
+      refresh_gems_in_development
       bootstrap:check_flag
       bootstrap:env_file
       bootstrap:copy_files
       bootstrap:db
+      start_services
+      copy_files
       on:bootstrapped
-      finish
+      on:deployed
       bootstrap:flag_success
     ]
 
@@ -70,19 +81,6 @@ module DeployTasks
       end
     end
 
-    task :start => %w[
-      setup_docker_env
-      build_containers
-      shut_down_services
-      pre_start
-      start_services
-    ]
-
-    task :finish => %w[
-      copy_files
-      on:deployed
-    ]
-
     task :build_containers do
       sh "docker-compose build"
     end
@@ -91,10 +89,13 @@ module DeployTasks
       sh "docker-compose down --remove-orphans"
     end
 
-    task :pre_start do
+    task :refresh_gems_in_development do
       if Rumination::Deploy.development_target?
         sh "docker-compose run --rm #{app_container_name} bundle install"
       end
+    end
+
+    task :migrate_if_requested do
       if Rumination::Deploy.migrate_on_deploy?
         sh "docker-compose run --rm #{app_container_name} rake db:migrate"
       end
