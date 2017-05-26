@@ -22,11 +22,11 @@ module DeployTasks
       build_containers
       shut_down_services
       refresh_gems_in_development
+      start_services
       bootstrap:check_flag
       bootstrap:env_file
       bootstrap:copy_files
       bootstrap:db
-      start_services
       copy_files
       on:bootstrapped
       on:deployed
