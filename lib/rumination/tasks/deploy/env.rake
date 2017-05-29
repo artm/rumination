@@ -18,7 +18,7 @@ namespace :deploy do
     __
   end
 
-  task :load_target_config do
+  task load_target_config: :dotenv do
     target = ENV["TARGET"] || "development"
     puts "Loading '#{target}' target config"
     Rumination::Deploy.load_target_config target
