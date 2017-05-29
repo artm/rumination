@@ -53,7 +53,11 @@ module DeployTasks
         end
       end
 
-      task :db
+      task :db => bootstrap_db_task
+
+      task "db:active_record" do
+        sh "docker-compose run --rm #{app_container_name} rake db:setup:maybe_load_dump"
+      end
 
       task :flag_success do
         flag_path = Rumination::Deploy.bootstrapped_flag_path
@@ -119,6 +123,14 @@ module DeployTasks
 
     def app_container_full_name
       Rumination::Deploy.app_container_full_name
+    end
+
+    def bootstrap_db_task
+      if defined?(ActiveRecord)
+        %w[deploy:bootstrap:db:active_record]
+      else
+        []
+      end
     end
   end
 end

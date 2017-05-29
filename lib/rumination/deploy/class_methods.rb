@@ -77,6 +77,10 @@ module Rumination
         "/opt/app/bootstrapped.ok"
       end
 
+      def seeds_dump_file
+        "/opt/app/seeds.sql.gz"
+      end
+
       private
 
       def persistent_env

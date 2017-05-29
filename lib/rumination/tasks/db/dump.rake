@@ -3,12 +3,10 @@ namespace :db do
   include Rumination::Pg::Commands
 
   task :create_dump, [:dumpfile_path] => :pg_environment do |t, args|
-    args.with_defaults dumpfile_path: Rumination.config.pg.dumpfile_path
     create_dump args.dumpfile_path, "-O"
   end
 
   task :load_dump, [:dumpfile_path] => :pg_environment do |t, args|
-    args.with_defaults dumpfile_path: Rumination.config.pg.dumpfile_path
     load_dump args.dumpfile_path
   end
 
