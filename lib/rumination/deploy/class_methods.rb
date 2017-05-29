@@ -91,7 +91,13 @@ module Rumination
       private
 
       def persistent_env
-        config.persistent_env || {}
+        default_persistent_env.merge(config.persistent_env || {})
+      end
+
+      def default_persistent_env
+        {
+          "SECRET_KEY_BASE" => Generate.secret_key_base
+        }
       end
 
       def generated_passwords
