@@ -25,7 +25,7 @@ module Rumination
           env["LETSENCRYPT_HOST"] = config.virtual_host
           env["LETSENCRYPT_EMAIL"] = config.letsencrypt_email
         end
-        if ENV["NEWRELIC_KEY"]
+        if ENV["NEWRELIC_KEY"].present?
           env["NEWRELIC_NAME"] = project_with_target_name
         end
         env = env.merge(config.docker_env || {})
