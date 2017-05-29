@@ -3,6 +3,24 @@ require "rumination/deploy"
 module DeployTasks
   extend Rake::DSL
 
+  class << self
+    def app_container_name
+      Rumination::Deploy.app_container_name
+    end
+
+    def app_container_full_name
+      Rumination::Deploy.app_container_full_name
+    end
+
+    def bootstrap_db_task
+      if defined?(ActiveRecord)
+        %w[deploy:bootstrap:db:active_record]
+      else
+        []
+      end
+    end
+  end
+
   task :deploy => "deploy:default"
 
   namespace :deploy do
@@ -112,24 +130,6 @@ module DeployTasks
     task :copy_files do
       Rumination::Deploy.files_to_copy_on_deploy.each do |source, target|
         sh "docker cp #{source} #{app_container_full_name}:#{target}"
-      end
-    end
-  end
-
-  class << self
-    def app_container_name
-      Rumination::Deploy.app_container_name
-    end
-
-    def app_container_full_name
-      Rumination::Deploy.app_container_full_name
-    end
-
-    def bootstrap_db_task
-      if defined?(ActiveRecord)
-        %w[deploy:bootstrap:db:active_record]
-      else
-        []
       end
     end
   end
