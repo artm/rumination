@@ -1,5 +1,4 @@
 require "dotenv"
-require "dotenv/tasks"
 require "active_support/core_ext/string/strip"
 
 require "rumination/deploy"
@@ -19,7 +18,8 @@ namespace :deploy do
     __
   end
 
-  task load_target_config: :dotenv do
+  task :load_target_config do
+    Dotenv.load
     target = ENV["TARGET"] || "development"
     puts "Loading '#{target}' target config"
     Rumination::Deploy.load_target_config target
