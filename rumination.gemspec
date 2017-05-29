@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "railties"
   spec.add_dependency "dotenv"
   spec.add_dependency "highline"
+  spec.add_dependency "newrelic_rpm"
 end
