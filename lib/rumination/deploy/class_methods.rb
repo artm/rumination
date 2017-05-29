@@ -25,6 +25,9 @@ module Rumination
           env["LETSENCRYPT_HOST"] = config.virtual_host
           env["LETSENCRYPT_EMAIL"] = config.letsencrypt_email
         end
+        if ENV["NEWRELIC_KEY"]
+          env["NEWRELIC_NAME"] = project_with_target_name
+        end
         env = env.merge(config.docker_env || {})
         env
       end
@@ -51,6 +54,10 @@ module Rumination
             io.puts %Q[export #{var}="#{val}"]
           end
         end
+      end
+
+      def project_with_target_name
+        "#{compose_project_name} (#{target})"
       end
 
       def files_to_copy_on_bootstrap
