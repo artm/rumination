@@ -52,8 +52,15 @@ module DeployTasks
     ]
 
     namespace :on do
-      task :deployed
+      task :deployed => :publish_static
       task :bootstrapped
+    end
+
+    task :publish_static do
+      vhost = ENV["VIRTUAL_HOST"]
+      if vhost && Dir.exists?("./public")
+        sh "docker-compose run --rm #{app_container_name} rsync -av public/ /var/www/#{vhost}"
+      end
     end
 
     namespace :bootstrap do
