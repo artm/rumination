@@ -26,6 +26,7 @@ module DeployTasks
   namespace :deploy do
     task :default => %w[
       setup_docker_env
+      copy_nginx_config
       build_containers
       shut_down_services
       refresh_gems_in_development
@@ -37,6 +38,7 @@ module DeployTasks
 
     task :bootstrap => %w[
       setup_docker_env
+      copy_nginx_config
       build_containers
       shut_down_services
       refresh_gems_in_development
@@ -60,6 +62,17 @@ module DeployTasks
       vhost = ENV["VIRTUAL_HOST"]
       if vhost && Dir.exists?("./public")
         sh "docker-compose run --rm #{app_container_name} rsync -av public/ /var/www/#{vhost}"
+      end
+    end
+
+    task :copy_nginx_config do
+      vhosts = ENV["VIRTUAL_HOST"].to_s.split(",")
+      if vhosts.any? && File.exists?("./deploy/nginx.conf")
+        main_vhost = vhosts.shift
+        sh "docker-compose run --rm #{app_container_name} rsync -av deploy/nginx.conf /etc/nginx/vhost.d/#{main_vhost}"
+        vhosts.each do |vhost|
+          sh "docker-compose run --rm #{app_container_name} ln -s /etc/nginx/vhost.d/#{main_vhost} /etc/nginx/vhost.d/#{vhost}"
+        end
       end
     end
 
