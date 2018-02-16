@@ -1,5 +1,6 @@
 require "active_support/configurable"
 require "rumination/railtie" if defined?(Rails)
+require "newrelic_rpm"
 
 module Rumination
   include ActiveSupport::Configurable
