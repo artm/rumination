@@ -59,9 +59,13 @@ module DeployTasks
     end
 
     task :publish_static do
-      vhost = ENV["VIRTUAL_HOST"]
-      if vhost && Dir.exists?("./public")
-        sh "docker-compose run --rm #{app_container_name} rsync -av public/ /var/www/#{vhost}"
+      vhosts = ENV["VIRTUAL_HOST"].to_s.split(",")
+      if vhosts.any? && Dir.exists?("./public")
+        main_vhost = vhosts.shift
+        sh "docker-compose run --rm #{app_container_name} rsync -av public/ /var/www/#{main_vhost}"
+        vhosts.each do |vhost|
+          sh "docker-compose run --rm #{app_container_name} ln -s /var/www/#{main_vhost} /var/www/#{vhost}"
+        end
       end
     end
 
