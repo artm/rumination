@@ -64,7 +64,7 @@ module DeployTasks
         main_vhost = vhosts.shift
         sh "docker-compose run --rm #{app_container_name} rsync -av public/ /var/www/#{main_vhost}"
         vhosts.each do |vhost|
-          sh "docker-compose run --rm #{app_container_name} ln -fs /var/www/#{vhost} /var/www/#{main_vhost}"
+          sh "docker-compose run --rm #{app_container_name} ln -fs /var/www/#{main_vhost} /var/www/#{vhost}"
         end
       end
     end
@@ -75,7 +75,7 @@ module DeployTasks
         main_vhost = vhosts.shift
         sh "docker-compose run --rm #{app_container_name} rsync -av deploy/nginx.conf /etc/nginx/vhost.d/#{main_vhost}"
         vhosts.each do |vhost|
-          sh "docker-compose run --rm #{app_container_name} ln -fs /etc/nginx/vhost.d/#{vhost} /etc/nginx/vhost.d/#{main_vhost}"
+          sh "docker-compose run --rm #{app_container_name} ln -fs /etc/nginx/vhost.d/#{main_vhost} /etc/nginx/vhost.d/#{vhost}"
         end
       end
     end
