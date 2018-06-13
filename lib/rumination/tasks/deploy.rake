@@ -71,9 +71,9 @@ module DeployTasks
 
     task :copy_nginx_config do
       vhosts = ENV["VIRTUAL_HOST"].to_s.split(",")
-      if vhosts.any? && File.exists?("./deploy/nginx.conf")
+      if vhosts.any? && File.exists?("./config/deploy/nginx.conf")
         main_vhost = vhosts.shift
-        sh "docker-compose run --rm #{app_container_name} rsync -av deploy/nginx.conf /etc/nginx/vhost.d/#{main_vhost}"
+        sh "docker-compose run --rm #{app_container_name} rsync -av config/deploy/nginx.conf /etc/nginx/vhost.d/#{main_vhost}"
         vhosts.each do |vhost|
           sh "docker-compose run --rm #{app_container_name} ln -fs /etc/nginx/vhost.d/#{main_vhost} /etc/nginx/vhost.d/#{vhost}"
         end
