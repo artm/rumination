@@ -37,7 +37,6 @@ module DeployTasks
 
     task :bootstrap => %w[
       setup_docker_env
-      copy_nginx_config
       build_containers
       shut_down_services
       refresh_gems_in_development
